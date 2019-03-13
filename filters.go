@@ -7,7 +7,7 @@ import (
 	"io"
 	"log"
 
-	"gitthub.com/bgallie/utilities"
+	"github.com/bgallie/utilities"
 )
 
 var (
