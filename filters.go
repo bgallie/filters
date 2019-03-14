@@ -17,6 +17,8 @@ var (
 	checkFatal = utilities.CheckFatal
 )
 
+// ToAscii85 reads data from r, encodes it using Ascii85.
+// The Ascii85 encoded data can be read using the retured PipeReader.
 func ToAscii85(r io.Reader) *io.PipeReader {
 	defer utilities.Un(trace("ToAscii85"))
 	rRdr, rWrtr := io.Pipe()
@@ -28,6 +30,7 @@ func ToAscii85(r io.Reader) *io.PipeReader {
 		defer ascii85W.Close()
 		wcnt, err := io.Copy(ascii85W, r)
 		log.Printf("ToAscii85 -> encoding ascii85 -> io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		checkFatal(err)
 		return
 	}()
 
@@ -44,6 +47,7 @@ func FromAscii85(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		wcnt, err := io.Copy(rWrtr, ascii85R)
 		log.Printf("FromAscii85 -> decoding ascii85: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		checkFatal(err)
 		return
 	}()
 
@@ -63,6 +67,7 @@ func ToFlate(r io.Reader) *io.PipeReader {
 		defer flateW.Close()
 		wcnt, err := io.Copy(flateW, r)
 		log.Printf("ToFlate -> writing flate: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		checkFatal(err)
 		checkFatal(flateW.Flush())
 		return
 	}()
@@ -81,6 +86,7 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		wcnt, err := io.Copy(rWrtr, flateR)
 		log.Printf("FromFlate -> reading flate: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		checkFatal(err)
 		return
 	}()
 
