@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 )
 
 func SplitToLines(r io.Reader) *io.PipeReader {
@@ -19,15 +18,12 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 
 		for {
 			n, err := io.ReadFull(r, line[:])
-			log.Printf("Split2Lines -> io.ReadFull: len: %d, err: %v\n", n, err)
 			checkFatal(err)
 
 			if err != nil {
 				// must be EOF or ErrUnexpectedEOF
 				if n != 0 {
 					n, err = fmt.Fprintln(rWtr, string(line[:n]))
-					log.Printf("Split2Lines -> io.PipeWriter: len: %d, err: %v\n",
-						n, err)
 					checkFatal(err)
 				}
 
@@ -35,7 +31,6 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 			}
 
 			n, err = fmt.Fprintln(rWtr, string(line[:n]))
-			log.Printf("Split2Lines -> io.PipeWriter: len: %d, err: %v\n", n, err)
 			checkFatal(err)
 		}
 	}()
@@ -53,14 +48,10 @@ func CombineLines(r io.Reader) *io.PipeReader {
 		bRdr := bufio.NewReader(r)
 
 		for {
-			line, isPrefix, err := bRdr.ReadLine()
-			log.Printf("CombineLines -> ReadLine: len: %d, isPrefix: %v, err: %v\n",
-				len(line), isPrefix, err)
+			line, _, err := bRdr.ReadLine()
 
 			if err == nil {
-				n, err := rWtr.Write(line)
-				log.Printf("CombineLines -> io.PipeWriter: len: %d, err: %v\n",
-					n, err)
+				_, err := rWtr.Write(line)
 				checkFatal(err)
 			} else {
 				checkFatal(err)
