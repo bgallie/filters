@@ -8,6 +8,9 @@ import (
 	"log"
 )
 
+// SplitToLines reads a stream of ASCII characters (usally the output from
+// ascii85) from r and splits it into lines of 72 characters.  The lines can be
+// read from the returned PipeReader.
 func SplitToLines(r io.Reader) *io.PipeReader {
 	defer un(trace("SplitLines:"))
 	rRdr, rWtr := io.Pipe()
