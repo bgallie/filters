@@ -4,7 +4,6 @@ package filters
 import (
 	"compress/flate"
 	"io"
-	"log"
 )
 
 // ToFlate reads data from r and compresses it using flate with the best
@@ -20,8 +19,7 @@ func ToFlate(r io.Reader) *io.PipeReader {
 		defer un(trace("ToFlate -> writing flate"))
 		defer rWrtr.Close()
 		defer flateW.Close()
-		wcnt, err := io.Copy(flateW, r)
-		log.Printf("ToFlate -> writing flate: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		_, err := io.Copy(flateW, r)
 		checkFatal(err)
 		checkFatal(flateW.Flush())
 		return
@@ -41,8 +39,7 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer un(trace("FromFlate -> reading flate"))
 		defer flateR.Close()
 		defer rWrtr.Close()
-		wcnt, err := io.Copy(rWrtr, flateR)
-		log.Printf("FromFlate -> reading flate: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		_, err := io.Copy(rWrtr, flateR)
 		checkFatal(err)
 		return
 	}()

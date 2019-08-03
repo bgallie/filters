@@ -4,7 +4,6 @@ package filters
 import (
 	"encoding/ascii85"
 	"io"
-	"log"
 )
 
 // ToAscii85 reads data from r, encodes it using Ascii85.
@@ -18,8 +17,7 @@ func ToAscii85(r io.Reader) *io.PipeReader {
 		defer un(trace("ToAscii85 -> encoding ascii85"))
 		defer rWrtr.Close()
 		defer ascii85W.Close()
-		wcnt, err := io.Copy(ascii85W, r)
-		log.Printf("ToAscii85 -> encoding ascii85 -> io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		_, err := io.Copy(ascii85W, r)
 		checkFatal(err)
 		return
 	}()
@@ -37,8 +35,7 @@ func FromAscii85(r io.Reader) *io.PipeReader {
 	go func() {
 		defer un(trace("FromAscii85 -> decoding ascii85"))
 		defer rWrtr.Close()
-		wcnt, err := io.Copy(rWrtr, ascii85R)
-		log.Printf("FromAscii85 -> decoding ascii85: io.Copy wrote %d bytes.  err: %v\n", wcnt, err)
+		_, err := io.Copy(rWrtr, ascii85R)
 		checkFatal(err)
 		return
 	}()
