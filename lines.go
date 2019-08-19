@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-// SplitToLines reads a stream of ASCII characters (usally the output from
+// SplitToLines reads a stream of ASCII characters (usually the output from
 // ascii85) from r and splits it into lines of 72 characters.  The lines can be
 // read from the returned PipeReader.
 func SplitToLines(r io.Reader) *io.PipeReader {
@@ -41,6 +41,10 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
+// CombineLines reads lines of 72 characters (usually the output from
+// SplitToLines) and combines them into a stream of characters (minus
+// the new line characters).  The stream of characters can be read from
+// the returned PipeReader.
 func CombineLines(r io.Reader) *io.PipeReader {
 	defer un(trace("CombineLines:"))
 	rRdr, rWtr := io.Pipe()
