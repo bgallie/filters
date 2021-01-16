@@ -25,12 +25,10 @@ func ToBinary(r io.Reader) *io.PipeReader {
 				break
 			}
 			for i := 0; i < cnt; i++ {
-				for j := 7; j >= 0; j-- {
-					if bitops.GetBit(buf[i:], uint(j)) {
-						fmt.Fprint(rWrtr, "1")
-					} else {
-						fmt.Fprint(rWrtr, "0")
-					}
+				if bitops.GetBit(buf, uint(i)) {
+					fmt.Fprint(rWrtr, "1")
+				} else {
+					fmt.Fprint(rWrtr, "0")
 				}
 			}
 		}
