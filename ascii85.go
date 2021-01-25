@@ -25,7 +25,7 @@ func ToAscii85(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
-// FromAscii85r reads ascii85 encoded data from r, decodes it using the ascii85
+// FromAscii85 reads ascii85 encoded data from r, decodes it using the ascii85
 // decoder.  The decoded data can be read using the returned PipeReader.
 func FromAscii85(r io.Reader) *io.PipeReader {
 	defer un(trace("FromAscii85"))
