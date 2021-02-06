@@ -1,4 +1,4 @@
-module filters
+module github.com/bgallie/filters
 
 go 1.13
 
