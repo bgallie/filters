@@ -1,8 +1,8 @@
-module filters
+module github.com/bgallie/filters
 
-go 1.13
+go 1.15
 
 require (
-	github.com/bgallie/tnt2 v0.0.0-20191216193536-9c53074d01f8
-	github.com/bgallie/utilities v0.0.0-20190429171123-27bf190fa36b
+	github.com/bgallie/tnt2 v0.0.0-20210206112219-adb65517c90d
+	github.com/bgallie/utilities v0.0.0-20210206113128-9b91576ea496
 )
