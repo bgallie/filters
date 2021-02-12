@@ -1,6 +1,2 @@
-// filters project doc.go
-
-/*
-filters document
-*/
+// Package filters - doc.go
 package filters

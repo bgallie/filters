@@ -1,4 +1,4 @@
-// binary - output a stream of bytes as a sequect of '0' and '1' characters.
+// Package filters - binary: output a stream of bytes as a sequect of '0' and '1' characters.
 package filters
 
 import (
@@ -38,20 +38,18 @@ func ToBinary(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
-// FromBinary reads data encoded by ToBinary from r, decodes it.
+// FromBinary reads data encoded by ToBinary from r, and decodes it.
 // The decoded data can be read using the returned PipeReader.
-// func FromBinary(r io.Reader) *io.PipeReader {
-// 	defer un(trace("FromBinary"))
-// 	rRdr, rWrtr := io.Pipe()
-// 	ascii85R := ascii85.NewDecoder(r)
+func FromBinary(r io.Reader) *io.PipeReader {
+	defer un(trace("FromBinary"))
+	rRdr, rWrtr := io.Pipe()
+	// inp := make([]byte, 1024)
 
-// 	go func() {
-// 		defer un(trace("FromAscii85 -> decoding ascii85"))
-// 		defer rWrtr.Close()
-// 		_, err := io.Copy(rWrtr, ascii85R)
-// 		checkFatal(err)
-// 		return
-// 	}()
+	go func() {
+		defer un(trace("FromBinary -> decoding binary"))
+		defer rWrtr.Close()
+		return
+	}()
 
-// 	return rRdr
-// }
+	return rRdr
+}

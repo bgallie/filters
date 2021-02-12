@@ -1,4 +1,4 @@
-// flate.go
+// Package filters - flate: compress/uncompress a data stream.
 package filters
 
 import (

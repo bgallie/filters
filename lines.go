@@ -1,4 +1,5 @@
-// lines.go
+// Package filters - lines: split a stream of characters into 72 character lines.
+// 							join lines of charaters into a stream of characters.
 package filters
 
 import (

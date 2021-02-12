@@ -1,4 +1,4 @@
-// ascii85
+// Package filters - ascii85: convert a stream of binary data to/from ASCII86 encoding.
 package filters
 
 import (
@@ -6,15 +6,15 @@ import (
 	"io"
 )
 
-// ToAscii85 reads data from r, encodes it using Ascii85.
+// ToASCII85 reads data from r, encodes it using Ascii85.
 // The Ascii85 encoded data can be read using the returned PipeReader.
-func ToAscii85(r io.Reader) *io.PipeReader {
-	defer un(trace("ToAscii85"))
+func ToASCII85(r io.Reader) *io.PipeReader {
+	defer un(trace("ToASCII85"))
 	rRdr, rWrtr := io.Pipe()
 	ascii85W := ascii85.NewEncoder(rWrtr)
 
 	go func() {
-		defer un(trace("ToAscii85 -> encoding ascii85"))
+		defer un(trace("ToASCII85 -> encoding ascii85"))
 		defer rWrtr.Close()
 		defer ascii85W.Close()
 		_, err := io.Copy(ascii85W, r)
@@ -25,15 +25,15 @@ func ToAscii85(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
-// FromAscii85 reads ascii85 encoded data from r, decodes it using the ascii85
+// FromASCII85 reads ascii85 encoded data from r, decodes it using the ascii85
 // decoder.  The decoded data can be read using the returned PipeReader.
-func FromAscii85(r io.Reader) *io.PipeReader {
-	defer un(trace("FromAscii85"))
+func FromASCII85(r io.Reader) *io.PipeReader {
+	defer un(trace("FromASCII85"))
 	rRdr, rWrtr := io.Pipe()
 	ascii85R := ascii85.NewDecoder(r)
 
 	go func() {
-		defer un(trace("FromAscii85 -> decoding ascii85"))
+		defer un(trace("FromASCII85 -> decoding ascii85"))
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, ascii85R)
 		checkFatal(err)
