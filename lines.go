@@ -8,20 +8,22 @@ import (
 	"io"
 )
 
+var LineSize int = 72
+
 // SplitToLines reads a stream of ASCII characters (usually the output from
-// ascii85) from r and splits it into lines of 72 characters.  The lines can be
-// read from the returned PipeReader.
+// ascii85) from r and splits it into lines of 'LineSize' characters.  The
+// lines can be read from the returned PipeReader.
 func SplitToLines(r io.Reader) *io.PipeReader {
 	defer un(trace("SplitLines:"))
 	rRdr, rWtr := io.Pipe()
-	var line [72]byte
+	line := make([]byte, LineSize, LineSize)
 
 	go func() {
 		defer un(trace("Split2Lines"))
 		defer rWtr.Close()
 
 		for {
-			n, err := io.ReadFull(r, line[:])
+			n, err := io.ReadFull(r, line)
 			checkFatal(err)
 
 			if err != nil {
@@ -42,7 +44,7 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
-// CombineLines reads lines of 72 characters (usually the output from
+// CombineLines reads lines of characters (usually the output from
 // SplitToLines) and combines them into a stream of characters (minus
 // the new line characters).  The stream of characters can be read from
 // the returned PipeReader.
