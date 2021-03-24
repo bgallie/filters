@@ -24,6 +24,7 @@ func ToBinary(r io.Reader) *io.PipeReader {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
 				break
 			}
+			cnt *= 8
 			for i := 0; i < cnt; i++ {
 				if bitops.GetBit(buf, uint(i)) {
 					fmt.Fprint(rWrtr, "1")
@@ -40,16 +41,17 @@ func ToBinary(r io.Reader) *io.PipeReader {
 
 // FromBinary reads data encoded by ToBinary from r, and decodes it.
 // The decoded data can be read using the returned PipeReader.
-func FromBinary(r io.Reader) *io.PipeReader {
-	defer un(trace("FromBinary"))
-	rRdr, rWrtr := io.Pipe()
-	// inp := make([]byte, 1024)
+// TO DO:  implement FromBinary
+// func FromBinary(r io.Reader) *io.PipeReader {
+// 	defer un(trace("FromBinary"))
+// 	rRdr, rWrtr := io.Pipe()
+// 	// inp := make([]byte, 1024)
 
-	go func() {
-		defer un(trace("FromBinary -> decoding binary"))
-		defer rWrtr.Close()
-		return
-	}()
+// 	go func() {
+// 		defer un(trace("FromBinary -> decoding binary"))
+// 		defer rWrtr.Close()
+// 		return
+// 	}()
 
-	return rRdr
-}
+// 	return rRdr
+// }
