@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 )
 
 type Block struct {
@@ -15,11 +16,9 @@ type Block struct {
 // ToPem reads data from r, encodes it using PEM formatted encoding.
 // The PEM encoded data can be read using the returned PipeReader.
 func ToPem(r io.Reader, blk Block) *io.PipeReader {
-	defer un(trace("ToPem"))
 	rRdr, rWrtr := io.Pipe()
 
 	go func() {
-		defer un(trace("ToPem -> encoding pem"))
 		defer rWrtr.Close()
 		fmt.Fprintf(rWrtr, "-----BEGIN %s-----\n", blk.Type)
 		for k, v := range blk.Headers {
@@ -38,63 +37,57 @@ func ToPem(r io.Reader, blk Block) *io.PipeReader {
 }
 
 // FromPem reads PEM encoded data from r, decodes it using a base64
-// decoder.  The PEM iformation is returned in the pem.Block structure
+// decoder.  The PEM information is returned in the pem.Block structure
 // and the decoded data can be read using the returned PipeReader.
 func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	var blk Block
 	blk.Headers = make(map[string]string)
-	rRdr, rWtr := io.Pipe()
 	base64R, base64W := io.Pipe()
 	bRdr := bufio.NewReader(r)
-
 	line, _, err := bRdr.ReadLine()
-	checkFatal(err)
+	checkFatalMsg(err, "Missing PEM message.")
 	// Get the type of PEM message
 	if bytes.HasPrefix(line, []byte("-----BEGIN ")) {
 		i := bytes.Index(line, []byte(" ")) + 1
 		j := bytes.Index(line[i:], []byte("-"))
 		blk.Type = string(line[i : i+j])
 	} else {
-		panic("Incorrectly formed PEM message.\n")
+		log.Fatalln("Incorrectly formed PEM message: no BEGIN line.")
 	}
-
+	// Get any header information from the PEM message
 	line, _, err = bRdr.ReadLine()
-	checkFatal(err)
+	checkFatalMsg(err, "Incomplete/malformed PEM message")
 	for len(line) != 0 {
 		i := bytes.Index(line, []byte(": "))
 		k := string(line[:i])
 		v := string(line[i+2:])
 		blk.Headers[k] = v
 		line, _, err = bRdr.ReadLine()
-		checkFatal(err)
+		checkFatalMsg(err, "Incomplete/malformed PEM message")
 	}
 
 	go func() {
 		defer base64W.Close()
-
+		// Read the base64 data from the PEM message and send it to the base64
+		// filter for decoding.
 		line, _, err := bRdr.ReadLine()
-		checkFatal(err)
-		for !bytes.HasPrefix(line, []byte("-----END ")) {
+		checkFatalMsg(err, "Incomplete/malformed PEM message")
+		for err == nil && !bytes.HasPrefix(line, []byte("-----END ")) {
 			_, err = base64W.Write(line)
-			line, _, err = bRdr.ReadLine()
 			checkFatal(err)
+			line, _, err = bRdr.ReadLine()
+			checkFatalMsg(err, "Incomplete/malformed PEM message")
 		}
-		if bytes.HasPrefix(line, []byte("-----END ")) {
+		if err == nil && bytes.HasPrefix(line, []byte("-----END ")) {
 			i := bytes.Index(line, []byte(" ")) + 1
 			j := bytes.Index(line[i:], []byte("-"))
 			if blk.Type != string(line[i:i+j]) {
-				panic("Incorrectly formed PEM message: BEGIN/END type mismatch\n")
+				log.Fatalln("Incorrectly formed PEM message: BEGIN/END type mismatch")
 			}
 		} else {
-			panic("Incorrectly formed PEM message.\n")
+			log.Fatalln("Incorrectly formed PEM message.")
 		}
 	}()
 
-	go func() {
-		defer rWtr.Close()
-		_, err = io.Copy(rWtr, FromBase64(base64R))
-		checkFatal(err)
-	}()
-
-	return rRdr, blk
+	return FromBase64(base64R), blk
 }

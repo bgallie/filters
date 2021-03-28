@@ -11,19 +11,17 @@ import (
 // ToBinary reads data from r, encodes it as a stream of '0' and '1' characters.
 // The ToBinary encoded data can be read using the returned PipeReader.
 func ToBinary(r io.Reader) *io.PipeReader {
-	defer un(trace("ToBinary"))
 	rRdr, rWrtr := io.Pipe()
 
 	go func() {
-		defer un(trace("ToBinary -> encoding binary characters"))
 		defer rWrtr.Close()
 		for {
 			buf := make([]byte, 1024)
 			cnt, err := r.Read(buf)
-			checkFatal(err)
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
 				break
 			}
+			checkFatal(err)
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
 				if bitops.GetBit(buf, uint(i)) {

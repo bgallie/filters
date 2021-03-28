@@ -1,12 +1,15 @@
 package filters
 
-import (
-	"github.com/bgallie/utilities"
-)
+import "log"
 
-var (
-	un         = utilities.Un
-	trace      = utilities.Trace
-	deferClose = utilities.DeferClose
-	checkFatal = utilities.CheckFatal
-)
+func checkFatal(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func checkFatalMsg(err error, msg string) {
+	if err != nil {
+		log.Fatalln(msg)
+	}
+}

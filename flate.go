@@ -10,13 +10,11 @@ import (
 // compression method available to it.  The compressed data can be read using
 // the returned PipeReader.
 func ToFlate(r io.Reader) *io.PipeReader {
-	defer un(trace("ToFlate:"))
 	rRdr, rWrtr := io.Pipe()
 	flateW, err := flate.NewWriter(rWrtr, flate.BestCompression)
 	checkFatal(err)
 
 	go func() {
-		defer un(trace("ToFlate -> writing flate"))
 		defer rWrtr.Close()
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
@@ -31,12 +29,10 @@ func ToFlate(r io.Reader) *io.PipeReader {
 // FromFlate reads data compressed using flate from r and decompresses it.
 // The decompressed data can be read from the returned PipeReader.
 func FromFlate(r io.Reader) *io.PipeReader {
-	defer un(trace("FromFlate:"))
 	rRdr, rWrtr := io.Pipe()
 	flateR := flate.NewReader(r)
 
 	go func() {
-		defer un(trace("FromFlate -> reading flate"))
 		defer flateR.Close()
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, flateR)

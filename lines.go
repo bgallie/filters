@@ -14,17 +14,17 @@ var LineSize int = 72
 // ascii85) from r and splits it into lines of 'LineSize' characters.  The
 // lines can be read from the returned PipeReader.
 func SplitToLines(r io.Reader) *io.PipeReader {
-	defer un(trace("SplitLines:"))
 	rRdr, rWtr := io.Pipe()
 	line := make([]byte, LineSize, LineSize)
 
 	go func() {
-		defer un(trace("Split2Lines"))
 		defer rWtr.Close()
 
 		for {
 			n, err := io.ReadFull(r, line)
-			checkFatal(err)
+			if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
+				checkFatal(err)
+			}
 
 			if err != nil {
 				// must be EOF or ErrUnexpectedEOF
@@ -49,11 +49,9 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 // the new line characters).  The stream of characters can be read from
 // the returned PipeReader.
 func CombineLines(r io.Reader) *io.PipeReader {
-	defer un(trace("CombineLines:"))
 	rRdr, rWtr := io.Pipe()
 
 	go func() {
-		defer un(trace("CombineLines -> PipeWriter:"))
 		defer rWtr.Close()
 		bRdr := bufio.NewReader(r)
 
@@ -64,7 +62,9 @@ func CombineLines(r io.Reader) *io.PipeReader {
 				_, err := rWtr.Write(line)
 				checkFatal(err)
 			} else {
-				checkFatal(err)
+				if err != io.EOF {
+					checkFatal(err)
+				}
 				break
 			}
 		}
