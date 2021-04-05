@@ -35,3 +35,32 @@ func TestToBinary(t *testing.T) {
 		})
 	}
 }
+
+func TestFromBinary(t *testing.T) {
+	type args struct {
+		r io.Reader
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "TestOne",
+			args: args{r: strings.NewReader("0010101000010110100101101100111000000100100101101100111000000100" +
+				"1111011001110110001101101001111000000100100001100000010000101110" +
+				"1010011011001110001011100000010011110110011001100000010000101110" +
+				"0001011010100110000001000110001001001110111101101011011001000010" +
+				"1001011001110110100001100100111010011110000001000110011010010110" +
+				"0011011000101110101001100100111001110100")},
+			want: "This is only a test of the FromBinary filter.",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got, _ := io.ReadAll(FromBinary(tt.args.r)); strings.Compare(string(got), tt.want) != 0 {
+				t.Errorf("FromBinary() = %v, want %v", string(got), tt.want)
+			}
+		})
+	}
+}

@@ -4,8 +4,6 @@ package filters
 import (
 	"fmt"
 	"io"
-
-	"github.com/bgallie/tnt2/cryptors/bitops"
 )
 
 // ToBinary reads data from r, encodes it as a stream of '0' and '1' characters.
@@ -24,7 +22,7 @@ func ToBinary(r io.Reader) *io.PipeReader {
 			checkFatal(err)
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
-				if bitops.GetBit(buf, uint(i)) {
+				if getBit(buf, uint(i)) {
 					fmt.Fprint(rWrtr, "1")
 				} else {
 					fmt.Fprint(rWrtr, "0")
@@ -39,17 +37,45 @@ func ToBinary(r io.Reader) *io.PipeReader {
 
 // FromBinary reads data encoded by ToBinary from r, and decodes it.
 // The decoded data can be read using the returned PipeReader.
-// TO DO:  implement FromBinary
-// func FromBinary(r io.Reader) *io.PipeReader {
-// 	defer un(trace("FromBinary"))
-// 	rRdr, rWrtr := io.Pipe()
-// 	// inp := make([]byte, 1024)
+func FromBinary(r io.Reader) *io.PipeReader {
+	rRdr, rWrtr := io.Pipe()
+	buf := make([]byte, 1024)
 
-// 	go func() {
-// 		defer un(trace("FromBinary -> decoding binary"))
-// 		defer rWrtr.Close()
-// 		return
-// 	}()
+	go func() {
+		defer rWrtr.Close()
+		n, err := r.Read(buf)
+		if err == io.EOF {
+			return
+		}
+		if err != nil && err != io.ErrUnexpectedEOF {
+			checkFatal(err)
+		}
+		for {
+			outb := make([]byte, 128)
 
-// 	return rRdr
-// }
+			for i := 0; i < n; i++ {
+				switch string(buf[i]) {
+				case "1":
+					outb = setBit(outb, uint(i))
+				case "0":
+					outb = clrBit(outb, uint(i))
+				default:
+					panic("Invalid input to FromBinary")
+				}
+			}
+
+			_, err = rWrtr.Write(outb[:(n+7)/8])
+			checkFatal(err)
+			n, err = r.Read(buf)
+			if err == io.EOF {
+				break
+			}
+			if err != nil && err != io.ErrUnexpectedEOF {
+				checkFatal(err)
+			}
+		}
+		return
+	}()
+
+	return rRdr
+}
