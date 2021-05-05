@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package encoding defines functions shared by other packages that
+// Package filters defines functions shared by other packages that
 // provide filters that can be connected together via io.Pipes.
 package filters
 

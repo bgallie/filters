@@ -1,3 +1,9 @@
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package pem defines filters to encode/decode data to/from a stream of
+// binary data.  These filters can be connected to other filters via io.Pipes.
 package pem
 
 import (

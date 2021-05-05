@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package hex defines filters to split a stream of ADCII characters (usually
+// Package lines defines filters to split a stream of ADCII characters (usually
 // the output ascii86) into lines of text and to combine lines of text into
 // a stream of ASCII charaters.  These filters can be connected to other filters
 // via io.Pipes.
