@@ -1,9 +1,16 @@
-// Package filters - binary: output a stream of bytes as a sequect of '0' and '1' characters.
-package filters
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package binary defines filters to encode the data as a stream of '0' and '1'
+// characters.  These filters can be connected to other filters via io.Pipes.
+package binary
 
 import (
 	"fmt"
 	"io"
+
+	"github.com/bgallie/filters"
 )
 
 // ToBinary reads data from r, encodes it as a stream of '0' and '1' characters.
@@ -19,10 +26,10 @@ func ToBinary(r io.Reader) *io.PipeReader {
 			if err == io.EOF || err == io.ErrUnexpectedEOF {
 				break
 			}
-			checkFatal(err)
+			filters.CheckFatal(err)
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
-				if getBit(buf, uint(i)) {
+				if filters.GetBit(buf, uint(i)) {
 					fmt.Fprint(rWrtr, "1")
 				} else {
 					fmt.Fprint(rWrtr, "0")
@@ -48,7 +55,7 @@ func FromBinary(r io.Reader) *io.PipeReader {
 			return
 		}
 		if err != nil && err != io.ErrUnexpectedEOF {
-			checkFatal(err)
+			filters.CheckFatal(err)
 		}
 		for {
 			outb := make([]byte, 128)
@@ -56,22 +63,22 @@ func FromBinary(r io.Reader) *io.PipeReader {
 			for i := 0; i < n; i++ {
 				switch string(buf[i]) {
 				case "1":
-					outb = setBit(outb, uint(i))
+					outb = filters.SetBit(outb, uint(i))
 				case "0":
-					outb = clrBit(outb, uint(i))
+					outb = filters.ClrBit(outb, uint(i))
 				default:
 					panic("Invalid input to FromBinary")
 				}
 			}
 
 			_, err = rWrtr.Write(outb[:(n+7)/8])
-			checkFatal(err)
+			filters.CheckFatal(err)
 			n, err = r.Read(buf)
 			if err == io.EOF {
 				break
 			}
 			if err != nil && err != io.ErrUnexpectedEOF {
-				checkFatal(err)
+				filters.CheckFatal(err)
 			}
 		}
 		return

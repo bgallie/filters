@@ -1,11 +1,19 @@
-// Package filters - lines: split a stream of characters into 72 character lines.
-// 							join lines of charaters into a stream of characters.
-package filters
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package hex defines filters to split a stream of ADCII characters (usually
+// the output ascii86) into lines of text and to combine lines of text into
+// a stream of ASCII charaters.  These filters can be connected to other filters
+// via io.Pipes.
+package lines
 
 import (
 	"bufio"
 	"fmt"
 	"io"
+
+	"github.com/bgallie/filters"
 )
 
 var LineSize int = 72
@@ -23,21 +31,21 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 		for {
 			n, err := io.ReadFull(r, line)
 			if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
-				checkFatal(err)
+				filters.CheckFatal(err)
 			}
 
 			if err != nil {
 				// must be EOF or ErrUnexpectedEOF
 				if n != 0 {
 					n, err = fmt.Fprintln(rWtr, string(line[:n]))
-					checkFatal(err)
+					filters.CheckFatal(err)
 				}
 
 				break
 			}
 
 			n, err = fmt.Fprintln(rWtr, string(line[:n]))
-			checkFatal(err)
+			filters.CheckFatal(err)
 		}
 	}()
 
@@ -60,10 +68,10 @@ func CombineLines(r io.Reader) *io.PipeReader {
 
 			if err == nil {
 				_, err := rWtr.Write(line)
-				checkFatal(err)
+				filters.CheckFatal(err)
 			} else {
 				if err != io.EOF {
-					checkFatal(err)
+					filters.CheckFatal(err)
 				}
 				break
 			}

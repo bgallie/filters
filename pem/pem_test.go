@@ -1,4 +1,4 @@
-package filters
+package pem
 
 import (
 	"io"
@@ -21,7 +21,7 @@ func TestToPem(t *testing.T) {
 		{
 			name: "TestOne",
 			args: args{r: strings.NewReader("This is only a test"), blk: Block{Type: "Test One", Headers: map[string]string{"COUNT": "100"}}},
-			want: "-----BEGIN Test One-----\nCOUNT: 100\n\nVGhpcyBpcyBvbmx5IGEgdGVzdA==\n-----END Test One-----\n",
+			want: "-----BEGIN Test One-----\nCOUNT: 100\nVGhpcyBpcyBvbmx5IGEgdGVzdA==\n-----END Test One-----\n",
 		},
 		{
 			name: "TestTwo",
@@ -34,7 +34,6 @@ func TestToPem(t *testing.T) {
 			},
 			want: "-----BEGIN Test Two-----\n" +
 				"COUNT: 200\n" +
-				"\n" +
 				"VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuICBU\n" +
 				"aGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZy4=\n" +
 				"-----END Test Two-----\n",
@@ -61,7 +60,7 @@ func TestFromPem(t *testing.T) {
 	}{
 		{
 			name:  "Test One",
-			args:  args{r: strings.NewReader("-----BEGIN Test One-----\nCOUNT: 100\n\nVGhpcyBpcyBvbmx5IGEgdGVzdA==\n-----END Test One-----\n")},
+			args:  args{r: strings.NewReader("-----BEGIN Test One-----\nCOUNT: 100\nVGhpcyBpcyBvbmx5IGEgdGVzdA==\n-----END Test One-----\n")},
 			want:  "This is only a test",
 			want1: Block{Type: "Test One", Headers: map[string]string{"COUNT": "100"}},
 		},
@@ -69,7 +68,6 @@ func TestFromPem(t *testing.T) {
 			name: "Test Two",
 			args: args{r: strings.NewReader("-----BEGIN Test Two-----\n" +
 				"COUNT: 200\n" +
-				"\n" +
 				"VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuICBU\n" +
 				"aGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZy4=\n" +
 				"-----END Test Two-----\n")},

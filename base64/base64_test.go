@@ -1,4 +1,4 @@
-package filters
+package base64
 
 import (
 	"io"

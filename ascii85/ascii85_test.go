@@ -1,5 +1,4 @@
-// Package filters - ascii85: convert a stream of binary data to/from ASCII86 encoding.
-package filters
+package ascii85
 
 import (
 	"io"

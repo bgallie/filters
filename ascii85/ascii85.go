@@ -1,9 +1,16 @@
-// Package filters - ascii85: convert a stream of binary data to/from ASCII86 encoding.
-package filters
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package ascii85 defines filters to encode/decode data using ASCII85 encoding.
+// These filters can be connected to other filters via io.Pipes.
+package ascii85
 
 import (
 	"encoding/ascii85"
 	"io"
+
+	"github.com/bgallie/filters"
 )
 
 // ToASCII85 reads data from r, encodes it using Ascii85.
@@ -16,7 +23,7 @@ func ToASCII85(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		defer ascii85W.Close()
 		_, err := io.Copy(ascii85W, r)
-		checkFatal(err)
+		filters.CheckFatal(err)
 		return
 	}()
 
@@ -32,7 +39,7 @@ func FromASCII85(r io.Reader) *io.PipeReader {
 	go func() {
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, ascii85R)
-		checkFatal(err)
+		filters.CheckFatal(err)
 		return
 	}()
 

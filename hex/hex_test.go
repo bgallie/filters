@@ -1,5 +1,4 @@
-// Package filters - hex: encode/decode a data stream into hexadecimal string format
-package filters
+package hex
 
 import (
 	"io"

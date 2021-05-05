@@ -1,5 +1,10 @@
-// Package filters - binary: output a stream of bytes as a sequect of '0' and '1' characters.
-package filters
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package binary defines filters to encode the data as a stream of '0' and '1'
+// characters.  These filters can be connected to other filters via io.Pipes.
+package binary
 
 import (
 	"io"

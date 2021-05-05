@@ -1,9 +1,16 @@
-// Package filters - flate: compress/uncompress a data stream.
-package filters
+// Copyright 2020 Billy G. Allie.  All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package flate defines filters to compress/uncompress data using flate.
+// These filters can be connected to other filters via io.Pipes.
+package flate
 
 import (
 	"compress/flate"
 	"io"
+
+	"github.com/bgallie/filters"
 )
 
 // ToFlate reads data from r and compresses it using flate with the best
@@ -12,14 +19,14 @@ import (
 func ToFlate(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	flateW, err := flate.NewWriter(rWrtr, flate.BestCompression)
-	checkFatal(err)
+	filters.CheckFatal(err)
 
 	go func() {
 		defer rWrtr.Close()
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
-		checkFatal(err)
-		checkFatal(flateW.Flush())
+		filters.CheckFatal(err)
+		filters.CheckFatal(flateW.Flush())
 		return
 	}()
 
@@ -36,7 +43,7 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer flateR.Close()
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, flateR)
-		checkFatal(err)
+		filters.CheckFatal(err)
 		return
 	}()
 
