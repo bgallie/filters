@@ -71,24 +71,23 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	} else {
 		log.Fatalln("Incorrectly formed PEM message: no BEGIN line.")
 	}
-
+	// Get the header data if any.
+	for {
+		line, _, err = bRdr.ReadLine()
+		filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
+		i := bytes.Index(line, []byte(": "))
+		if i < 0 {
+			break
+		}
+		k := string(line[:i])
+		v := string(line[i+2:])
+		blk.Headers[k] = v
+	}
+	// Process the base64 data and validate the 'END' line.
 	go func() {
 		defer base64W.Close()
 		// Read the base64 data from the PEM message and send it to the base64
 		// filter for decoding after processing any header information.
-		line, _, err := bRdr.ReadLine()
-		filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
-		for {
-			i := bytes.Index(line, []byte(": "))
-			if i < 0 {
-				break
-			}
-			k := string(line[:i])
-			v := string(line[i+2:])
-			blk.Headers[k] = v
-			line, _, err = bRdr.ReadLine()
-			filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
-		}
 		for err == nil && !bytes.HasPrefix(line, []byte("-----END ")) {
 			_, err = base64W.Write(line)
 			filters.CheckFatal(err)
