@@ -26,7 +26,6 @@ func ToFlate(r io.Reader) *io.PipeReader {
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
 		filters.CheckFatal(err)
-		filters.CheckFatal(flateW.Flush())
 		return
 	}()
 
