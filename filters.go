@@ -16,7 +16,7 @@ func CheckFatal(err error) {
 
 func CheckFatalMsg(err error, msg string) {
 	if err != nil {
-		log.Fatalln(msg)
+		log.Fatalf("%v %s\n", err, msg)
 	}
 }
 

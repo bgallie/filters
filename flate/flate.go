@@ -25,7 +25,7 @@ func ToFlate(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
-		filters.CheckFatal(err)
+		filters.CheckFatalMsg(err, "after ToFlate io.Copy")
 		return
 	}()
 
@@ -42,7 +42,7 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer flateR.Close()
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, flateR)
-		filters.CheckFatal(err)
+		filters.CheckFatalMsg(err, "after FromFlate io.Copy")
 		return
 	}()
 
