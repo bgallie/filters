@@ -39,8 +39,8 @@ func FromFlate(r io.Reader) *io.PipeReader {
 	flateR := flate.NewReader(r)
 
 	go func() {
-		defer flateR.Close()
 		defer rWrtr.Close()
+		defer flateR.Close()
 		_, err := io.Copy(rWrtr, flateR)
 		filters.CheckFatalMsg(err, "after FromFlate io.Copy")
 		return
