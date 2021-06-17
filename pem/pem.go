@@ -42,7 +42,7 @@ func ToPem(r io.Reader, blk Block) *io.PipeReader {
 		for k, v := range blk.Headers {
 			fmt.Fprintf(rWrtr, "%s: %s\n", k, v)
 		}
-		lines.LineSize = 64
+		lines.LineSize = 76
 		_, err := io.Copy(rWrtr, lines.SplitToLines(base64.ToBase64(r)))
 		filters.CheckFatal(err)
 		fmt.Fprintf(rWrtr, "-----END %s-----\n", blk.Type)
@@ -61,8 +61,9 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	blk.Headers = make(map[string]string)
 	base64R, base64W := io.Pipe()
 	bRdr := bufio.NewReader(r)
-	line, _, err := bRdr.ReadLine()
+	line, err := bRdr.ReadBytes('\n')
 	filters.CheckFatalMsg(err, "Missing PEM message.")
+	line = line[:len(line)-1]
 	// Get the type of PEM message
 	if bytes.HasPrefix(line, []byte("-----BEGIN ")) {
 		i := bytes.Index(line, []byte(" ")) + 1
@@ -73,8 +74,9 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	}
 	// Get the header data if any.
 	for {
-		line, _, err = bRdr.ReadLine()
+		line, err = bRdr.ReadBytes('\n')
 		filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
+		line = line[:len(line)-1]
 		i := bytes.Index(line, []byte(": "))
 		if i < 0 {
 			break
@@ -91,8 +93,9 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 		for err == nil && !bytes.HasPrefix(line, []byte("-----END ")) {
 			_, err = base64W.Write(line)
 			filters.CheckFatal(err)
-			line, _, err = bRdr.ReadLine()
+			line, err = bRdr.ReadBytes('\n')
 			filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
+			line = line[:len(line)-1]
 		}
 		if err == nil && bytes.HasPrefix(line, []byte("-----END ")) {
 			i := bytes.Index(line, []byte(" ")) + 1
