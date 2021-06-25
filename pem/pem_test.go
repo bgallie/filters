@@ -34,8 +34,8 @@ func TestToPem(t *testing.T) {
 			},
 			want: "-----BEGIN Test Two-----\n" +
 				"COUNT: 200\n" +
-				"VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuICBU\n" +
-				"aGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZy4=\n" +
+				"VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuICBUaGUgcXVpY2sg\n" +
+				"YnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZy4=\n" +
 				"-----END Test Two-----\n",
 		},
 	}

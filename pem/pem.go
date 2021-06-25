@@ -63,7 +63,6 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	bRdr := bufio.NewReader(r)
 	line, err := bRdr.ReadBytes('\n')
 	filters.CheckFatalMsg(err, "Missing PEM message.")
-	line = line[:len(line)-1]
 	// Get the type of PEM message
 	if bytes.HasPrefix(line, []byte("-----BEGIN ")) {
 		i := bytes.Index(line, []byte(" ")) + 1
@@ -76,13 +75,12 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	for {
 		line, err = bRdr.ReadBytes('\n')
 		filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
-		line = line[:len(line)-1]
 		i := bytes.Index(line, []byte(": "))
 		if i < 0 {
 			break
 		}
 		k := string(line[:i])
-		v := string(line[i+2:])
+		v := string(line[i+2 : len(line)-1])
 		blk.Headers[k] = v
 	}
 	// Process the base64 data and validate the 'END' line.
@@ -95,7 +93,6 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 			filters.CheckFatal(err)
 			line, err = bRdr.ReadBytes('\n')
 			filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
-			line = line[:len(line)-1]
 		}
 		if err == nil && bytes.HasPrefix(line, []byte("-----END ")) {
 			i := bytes.Index(line, []byte(" ")) + 1
