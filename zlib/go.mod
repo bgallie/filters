@@ -1,4 +1,4 @@
-module github.com/bgallie/filters/hex
+module github.com/bgallie/filters/zlib
 
 go 1.17
 

@@ -11,7 +11,7 @@ import (
 	"encoding/hex"
 	"io"
 
-	"github.com/bgallie/filters"
+	"github.com/friendsofgo/errors"
 )
 
 // ToHex reads data from r, encodes it using hexadecimal.
@@ -22,8 +22,9 @@ func ToHex(r io.Reader) *io.PipeReader {
 	go func() {
 		defer rWrtr.Close()
 		_, err := io.Copy(hexW, r)
-		filters.CheckFatal(err)
-		return
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a hex encoder."))
+		}
 	}()
 
 	return rRdr
@@ -38,8 +39,9 @@ func FromHex(r io.Reader) *io.PipeReader {
 	go func() {
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, hexR)
-		filters.CheckFatal(err)
-		return
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a hex decoder to a pipe writer"))
+		}
 	}()
 
 	return rRdr

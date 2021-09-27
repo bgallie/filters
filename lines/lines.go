@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bgallie/filters"
+	"github.com/friendsofgo/errors"
 )
 
 var LineSize int = 72
@@ -23,29 +23,33 @@ var LineSize int = 72
 // lines can be read from the returned PipeReader.
 func SplitToLines(r io.Reader) *io.PipeReader {
 	rRdr, rWtr := io.Pipe()
-	line := make([]byte, LineSize, LineSize)
+	line := make([]byte, LineSize)
 
 	go func() {
 		defer rWtr.Close()
 
 		for {
 			n, err := io.ReadFull(r, line)
-			if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
-				filters.CheckFatal(err)
+			if err != nil && !(errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF)) {
+				rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a pipe reader."))
 			}
 
 			if err != nil {
 				// must be EOF or ErrUnexpectedEOF
 				if n != 0 {
-					n, err = fmt.Fprintln(rWtr, string(line[:n]))
-					filters.CheckFatal(err)
+					_, err = fmt.Fprintln(rWtr, string(line[:n]))
+					if err != nil {
+						rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer."))
+					}
 				}
 
 				break
 			}
 
-			n, err = fmt.Fprintln(rWtr, string(line[:n]))
-			filters.CheckFatal(err)
+			_, err = fmt.Fprintln(rWtr, string(line[:n]))
+			if err != nil {
+				rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer."))
+			}
 		}
 	}()
 
@@ -68,10 +72,12 @@ func CombineLines(r io.Reader) *io.PipeReader {
 
 			if err == nil {
 				_, err := rWtr.Write(line)
-				filters.CheckFatal(err)
+				if err != nil {
+					rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer"))
+				}
 			} else {
 				if err != io.EOF {
-					filters.CheckFatal(err)
+					rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a buffered reader"))
 				}
 				break
 			}

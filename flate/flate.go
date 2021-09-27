@@ -10,7 +10,7 @@ import (
 	"compress/flate"
 	"io"
 
-	"github.com/bgallie/filters"
+	"github.com/friendsofgo/errors"
 )
 
 // ToFlate reads data from r and compresses it using flate with the best
@@ -19,14 +19,17 @@ import (
 func ToFlate(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	flateW, err := flate.NewWriter(rWrtr, flate.BestCompression)
-	filters.CheckFatal(err)
+	if err != nil {
+		rWrtr.CloseWithError(errors.Wrap(err, "failure creating flate.NewWriter."))
+	}
 
 	go func() {
 		defer rWrtr.Close()
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
-		filters.CheckFatalMsg(err, "after ToFlate io.Copy")
-		return
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a flate writer."))
+		}
 	}()
 
 	return rRdr
@@ -42,8 +45,9 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		defer flateR.Close()
 		_, err := io.Copy(rWrtr, flateR)
-		filters.CheckFatalMsg(err, "after FromFlate io.Copy")
-		return
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a flate reader to a pipe writer."))
+		}
 	}()
 
 	return rRdr
