@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bgallie/filters"
 	"github.com/bgallie/filters/base64"
 	"github.com/bgallie/filters/lines"
 	"github.com/friendsofgo/errors"
@@ -42,14 +41,12 @@ func ToPem(r io.Reader, blk Block) *io.PipeReader {
 		for k, v := range blk.Headers {
 			fmt.Fprintf(rWrtr, "%s: %s\n", k, v)
 		}
-		lines.LineSize = 76
+		lines.LineSize = 76 // output 76 characters per line
 		_, err := io.Copy(rWrtr, lines.SplitToLines(base64.ToBase64(r)))
 		if err != nil {
 			rWrtr.CloseWithError(errors.Wrap(err, "failure in io.Copy reading from lines.SplitToLines pipe reader"))
 		}
 		fmt.Fprintf(rWrtr, "-----END %s-----\n", blk.Type)
-
-		return
 	}()
 
 	return rRdr
@@ -67,21 +64,20 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 	if err != nil {
 		base64W.CloseWithError(errors.Wrap(err, "Missing PEM message."))
 	}
-	filters.CheckFatalMsg(err, "Missing PEM message.")
 	// Get the type of PEM message
 	if bytes.HasPrefix(line, []byte("-----BEGIN ")) {
 		i := bytes.Index(line, []byte(" ")) + 1
 		j := bytes.Index(line[i:], []byte("-"))
 		blk.Type = string(line[i : i+j])
 	} else {
-		if err != nil {
-			base64W.CloseWithError(errors.Wrap(err, "Incorrectly formed PEM message: no BEGIN line."))
-		}
+		base64W.CloseWithError(errors.Wrap(err, "Incorrectly formed PEM message: no BEGIN line."))
 	}
 	// Get the header data if any.
 	for {
 		line, err = bRdr.ReadBytes('\n')
-		filters.CheckFatalMsg(err, "Incomplete/malformed PEM message")
+		if err != nil {
+			base64W.CloseWithError(errors.Wrap(err, "Incomplete/malformed PEM message"))
+		}
 		i := bytes.Index(line, []byte(": "))
 		if i < 0 {
 			break
@@ -105,11 +101,15 @@ func FromPem(r io.Reader) (*io.PipeReader, Block) {
 				base64W.CloseWithError(errors.Wrap(err, "Incomplete/malformed PEM message"))
 			}
 		}
-		if err == nil && bytes.HasPrefix(line, []byte("-----END ")) {
-			i := bytes.Index(line, []byte(" ")) + 1
-			j := bytes.Index(line[i:], []byte("-"))
-			if blk.Type != string(line[i:i+j]) {
-				base64W.CloseWithError(errors.Wrap(err, "Incorrectly formed PEM message: BEGIN/END type mismatch"))
+		if err == nil {
+			if bytes.HasPrefix(line, []byte("-----END ")) {
+				i := bytes.Index(line, []byte(" ")) + 1
+				j := bytes.Index(line[i:], []byte("-"))
+				if blk.Type != string(line[i:i+j]) {
+					base64W.CloseWithError(errors.New("Incorrectly formed PEM message: BEGIN/END type mismatch"))
+				}
+			} else {
+				base64W.CloseWithError(errors.New("Incorrectly formed PEM message: missing END line"))
 			}
 		} else {
 			base64W.CloseWithError(errors.Wrap(err, "Incorrectly formed PEM message."))

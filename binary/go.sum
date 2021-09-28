@@ -1,2 +1,9 @@
-github.com/bgallie/filters v1.2.2 h1:mKPlisEKcF/MZRUKybAVT/agCfTfw6SzD80r0uuq9uA=
 github.com/bgallie/filters v1.2.2/go.mod h1:2BSy+63UOCMBoNlw5UlBoc6AwZTd9YJr85hnTPP+nSM=
+github.com/bgallie/filters v1.2.4 h1:u8k+nGzuRZ0dux+s/ZFjRU9E3zK51Xlw/eeRZ8f/ebE=
+github.com/bgallie/filters v1.2.4/go.mod h1:4Nh36ZRr7ZHlRdkz1KF5tWEmTcQpmADGFfwhMiqJlcg=
+github.com/bgallie/filters/base64 v0.0.0-20210606064605-635cfb0c7082/go.mod h1:2TSbcJDCEtv4HbGhm69qchK3tclkL16MLQXk0vF1BV8=
+github.com/bgallie/filters/lines v0.0.0-20210606064605-635cfb0c7082/go.mod h1:IByuEy4lVc+f9JJEofpe349AiwTBJGFl4T/qwNviZnA=
+github.com/friendsofgo/errors v0.9.2 h1:X6NYxef4efCBdwI7BgS820zFaN7Cphrmb+Pljdzjtgk=
+github.com/friendsofgo/errors v0.9.2/go.mod h1:yCvFW5AkDIL9qn7suHVLiI/gH228n7PC4Pn44IGoTOI=
+golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7 h1:9zdDQZ7Thm29KFXgAX/+yaf3eVbP7djjWp/dXAppNCc=
+golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

@@ -11,6 +11,7 @@ import (
 	"io"
 
 	"github.com/bgallie/filters"
+	"github.com/friendsofgo/errors"
 )
 
 // ToBinary reads data from r, encodes it as a stream of '0' and '1' characters.
@@ -23,20 +24,23 @@ func ToBinary(r io.Reader) *io.PipeReader {
 		for {
 			buf := make([]byte, 1024)
 			cnt, err := r.Read(buf)
-			if err == io.EOF || err == io.ErrUnexpectedEOF {
+			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
 				break
+			} else if err != nil {
+				rWrtr.CloseWithError(errors.Wrap(err, "failure reading from a reader"))
 			}
-			filters.CheckFatal(err)
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
 				if filters.GetBit(buf, uint(i)) {
-					fmt.Fprint(rWrtr, "1")
+					_, err = fmt.Fprint(rWrtr, "1")
 				} else {
-					fmt.Fprint(rWrtr, "0")
+					_, err = fmt.Fprint(rWrtr, "0")
+				}
+				if err != nil {
+					rWrtr.CloseWithError(errors.Wrap(err, "failure printing to a pipe writer"))
 				}
 			}
 		}
-		return
 	}()
 
 	return rRdr
@@ -51,11 +55,10 @@ func FromBinary(r io.Reader) *io.PipeReader {
 	go func() {
 		defer rWrtr.Close()
 		n, err := r.Read(buf)
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return
-		}
-		if err != nil && err != io.ErrUnexpectedEOF {
-			filters.CheckFatal(err)
+		} else if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure reading from a reader"))
 		}
 		for {
 			outb := make([]byte, 128)
@@ -67,21 +70,21 @@ func FromBinary(r io.Reader) *io.PipeReader {
 				case "0":
 					outb = filters.ClrBit(outb, uint(i))
 				default:
-					panic("Invalid input to FromBinary")
+					rWrtr.CloseWithError(errors.New("Invalid input to FromBinary"))
 				}
 			}
 
 			_, err = rWrtr.Write(outb[:(n+7)/8])
-			filters.CheckFatal(err)
+			if err != nil {
+				rWrtr.CloseWithError(errors.Wrap(err, "failure writing to a pipe writer"))
+			}
 			n, err = r.Read(buf)
 			if err == io.EOF {
 				break
-			}
-			if err != nil && err != io.ErrUnexpectedEOF {
-				filters.CheckFatal(err)
+			} else if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
+				rWrtr.CloseWithError(errors.Wrap(err, "failure reading from reader"))
 			}
 		}
-		return
 	}()
 
 	return rRdr

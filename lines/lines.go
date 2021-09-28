@@ -76,7 +76,7 @@ func CombineLines(r io.Reader) *io.PipeReader {
 					rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer"))
 				}
 			} else {
-				if err != io.EOF {
+				if !errors.Is(err, io.EOF) {
 					rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a buffered reader"))
 				}
 				break
