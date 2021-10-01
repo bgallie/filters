@@ -31,7 +31,7 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 		for {
 			n, err := io.ReadFull(r, line)
 			if err != nil && !(errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF)) {
-				rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a pipe reader."))
+				rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a reader."))
 			}
 
 			if err != nil {

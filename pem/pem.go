@@ -37,16 +37,25 @@ func ToPem(r io.Reader, blk Block) *io.PipeReader {
 
 	go func() {
 		defer rWrtr.Close()
-		fmt.Fprintf(rWrtr, "-----BEGIN %s-----\n", blk.Type)
+		_, err := fmt.Fprintf(rWrtr, "-----BEGIN %s-----\n", blk.Type)
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure printing PEM BEGIN line to a pipe writer"))
+		}
 		for k, v := range blk.Headers {
-			fmt.Fprintf(rWrtr, "%s: %s\n", k, v)
+			_, err = fmt.Fprintf(rWrtr, "%s: %s\n", k, v)
+			if err != nil {
+				rWrtr.CloseWithError(errors.Wrap(err, "failure printing PEM Header line to a pipe writer"))
+			}
 		}
 		lines.LineSize = 76 // output 76 characters per line
-		_, err := io.Copy(rWrtr, lines.SplitToLines(base64.ToBase64(r)))
+		_, err = io.Copy(rWrtr, lines.SplitToLines(base64.ToBase64(r)))
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure in io.Copy reading from lines.SplitToLines pipe reader"))
+			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) base64 encoded data to a pipe writer"))
 		}
-		fmt.Fprintf(rWrtr, "-----END %s-----\n", blk.Type)
+		_, err = fmt.Fprintf(rWrtr, "-----END %s-----\n", blk.Type)
+		if err != nil {
+			rWrtr.CloseWithError(errors.Wrap(err, "failure printing PEM END line to a pipe writer"))
+		}
 	}()
 
 	return rRdr
