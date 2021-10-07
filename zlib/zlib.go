@@ -34,7 +34,7 @@ func ToZlib(r io.Reader) *io.PipeReader {
 	return rRdr
 }
 
-// Fromzlib reads data compressed using zlib from r and decompresses it.
+// FromZlib reads data compressed using zlib from r and decompresses it.
 // The decompressed data can be read from the returned PipeReader.
 func FromZlib(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()

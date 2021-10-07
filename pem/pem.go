@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package pem defines filters to encode/decode data to/from a stream of
-// binary data.  These filters can be connected to other filters via io.Pipes.
+// Package pem defines filters to encode/decode data to/from a PEM encoded stream of
+// binary data.  PEM data encoding originated in Privacy Enhanced Mail. The most
+// common use of PEM encoding today is in TLS keys and certificates.  These filters
+// can be connected to other filters via io.Pipes.
 package pem
 
 import (
@@ -31,6 +33,7 @@ type Block struct {
 }
 
 // ToPem reads data from r, encodes it using PEM formatted encoding.
+// The 'blk' parameter provides the "Type" and "Headers" in the encoded form.
 // The PEM encoded data can be read using the returned PipeReader.
 func ToPem(r io.Reader, blk Block) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()

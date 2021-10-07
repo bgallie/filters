@@ -14,7 +14,8 @@ import (
 	"github.com/friendsofgo/errors"
 )
 
-// ToHex reads data from r, encodes it using hexadecimal.
+// ToHex reads data from r, encodes it using hex encoder.  The encoded
+// data can be read using the returned PipeReader.
 func ToHex(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	hexW := hex.NewEncoder(rWrtr)

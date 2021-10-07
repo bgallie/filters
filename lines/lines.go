@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package lines defines filters to split a stream of ADCII characters (usually
+// Package lines defines filters to split a stream of ASCII characters (usually
 // the output ascii86) into lines of text and to combine lines of text into
 // a stream of ASCII charaters.  These filters can be connected to other filters
 // via io.Pipes.
@@ -16,6 +16,10 @@ import (
 	"github.com/friendsofgo/errors"
 )
 
+// LineSize defines the number of character that are put into a line by the
+// SplitToLines function.  The default is 72 characters per line.  Change
+// it prior to calling SplitToLines to change the number of characters
+// per line.
 var LineSize int = 72
 
 // SplitToLines reads a stream of ASCII characters (usually the output from
