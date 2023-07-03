@@ -10,9 +10,25 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/bgallie/filters"
 	"github.com/friendsofgo/errors"
 )
+
+// SetBit - set bit in a byte array
+func SetBit(ary []byte, bit uint) []byte {
+	ary[bit>>3] |= (1 << (bit & 7))
+	return ary
+}
+
+// ClrBit - clear bit in a byte array
+func ClrBit(ary []byte, bit uint) []byte {
+	ary[bit>>3] &= ^(1 << (bit & 7))
+	return ary
+}
+
+// GetBit - return the value of a bit in a byte array
+func GetBit(ary []byte, bit uint) bool {
+	return (ary[bit>>3]&(1<<(bit&7)) != 0)
+}
 
 // ToBinary reads data from r, encodes it as a stream of '0' and '1' characters.
 // The ToBinary encoded data can be read using the returned PipeReader.
@@ -31,7 +47,7 @@ func ToBinary(r io.Reader) *io.PipeReader {
 			}
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
-				if filters.GetBit(buf, uint(i)) {
+				if GetBit(buf, uint(i)) {
 					_, err = fmt.Fprint(rWrtr, "1")
 				} else {
 					_, err = fmt.Fprint(rWrtr, "0")
@@ -66,9 +82,9 @@ func FromBinary(r io.Reader) *io.PipeReader {
 			for i := 0; i < n; i++ {
 				switch string(buf[i]) {
 				case "1":
-					outb = filters.SetBit(outb, uint(i))
+					outb = SetBit(outb, uint(i))
 				case "0":
-					outb = filters.ClrBit(outb, uint(i))
+					outb = ClrBit(outb, uint(i))
 				default:
 					rWrtr.CloseWithError(errors.New("Invalid input to FromBinary"))
 				}

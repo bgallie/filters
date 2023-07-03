@@ -10,7 +10,6 @@ import (
 	"compress/zlib"
 	"io"
 
-	"github.com/bgallie/filters"
 	"github.com/friendsofgo/errors"
 )
 
@@ -20,7 +19,9 @@ import (
 func ToZlib(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	zlibW, err := zlib.NewWriterLevel(rWrtr, zlib.BestCompression)
-	filters.CheckFatal(err)
+	if err != nil {
+		rWrtr.CloseWithError(errors.Wrap(err, "failure settomg NewWriterLevel in ToZlib"))
+	}
 
 	go func() {
 		defer rWrtr.Close()
@@ -39,7 +40,9 @@ func ToZlib(r io.Reader) *io.PipeReader {
 func FromZlib(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	zlibR, err := zlib.NewReader(r)
-	filters.CheckFatal(err)
+	if err != nil {
+		rWrtr.CloseWithError(errors.Wrap(err, "failure creating a NewReader in FromZlib"))
+	}
 
 	go func() {
 		defer zlibR.Close()

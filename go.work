@@ -1,0 +1,12 @@
+go 1.20
+
+use (
+	./ascii85
+	./base64
+	./binary
+	./flate
+	./hex
+	./lines
+	./pem
+	./zlib
+)

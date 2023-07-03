@@ -1,5 +1,0 @@
-github.com/bgallie/filters v1.2.2/go.mod h1:2BSy+63UOCMBoNlw5UlBoc6AwZTd9YJr85hnTPP+nSM=
-github.com/bgallie/filters/base64 v0.0.0-20210606064605-635cfb0c7082 h1:3EGwZzxXC/7fHpCZdCduYnWB3yhjR8FhszFj75E3P90=
-github.com/bgallie/filters/base64 v0.0.0-20210606064605-635cfb0c7082/go.mod h1:2TSbcJDCEtv4HbGhm69qchK3tclkL16MLQXk0vF1BV8=
-github.com/bgallie/filters/lines v0.0.0-20210606064605-635cfb0c7082 h1:ftWal+xu7nYvufGb/QAbatbHWGc15JsnSTQBAQojXEk=
-github.com/bgallie/filters/lines v0.0.0-20210606064605-635cfb0c7082/go.mod h1:IByuEy4lVc+f9JJEofpe349AiwTBJGFl4T/qwNviZnA=
