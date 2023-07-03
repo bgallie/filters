@@ -1,6 +1,6 @@
 module github.com/bgallie/filters/flate
 
-go 1.17
+go 1.20
 
 require github.com/friendsofgo/errors v0.9.2
 
