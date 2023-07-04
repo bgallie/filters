@@ -1,3 +1,7 @@
+github.com/bgallie/filters/base64 v0.0.0-20230704003458-ff3d2f30b3e5 h1:pytNBAFBDIqU25817DstFVPNHG152b/YXCvH65gG/zI=
+github.com/bgallie/filters/base64 v0.0.0-20230704003458-ff3d2f30b3e5/go.mod h1:4K61ZAGHfjYSMJzGJGt8DolShlaYSNbDmi32KREFN6k=
+github.com/bgallie/filters/lines v0.0.0-20211016023717-e8eb8749828a h1:ZzWcnnuz4Kvx2Bm83dTvN+mxCVhESpyfMUsbzdzqQ9A=
+github.com/bgallie/filters/lines v0.0.0-20211016023717-e8eb8749828a/go.mod h1:0aVGIEtid8RkfurV07aZLepsPyYnbZh4leOGot64qPg=
 github.com/friendsofgo/errors v0.9.2 h1:X6NYxef4efCBdwI7BgS820zFaN7Cphrmb+Pljdzjtgk=
 github.com/friendsofgo/errors v0.9.2/go.mod h1:yCvFW5AkDIL9qn7suHVLiI/gH228n7PC4Pn44IGoTOI=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
