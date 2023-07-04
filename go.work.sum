@@ -1,1 +1,3 @@
 github.com/bgallie/filters v1.2.5/go.mod h1:4Nh36ZRr7ZHlRdkz1KF5tWEmTcQpmADGFfwhMiqJlcg=
+github.com/bgallie/filters/base64 v0.0.0-20211016023717-e8eb8749828a/go.mod h1:Om2AXfq1oXTSMMmOoWxIYKWLc0X9jzHdBHrEFdPyt9E=
+github.com/bgallie/filters/lines v0.0.0-20211016023717-e8eb8749828a/go.mod h1:0aVGIEtid8RkfurV07aZLepsPyYnbZh4leOGot64qPg=
