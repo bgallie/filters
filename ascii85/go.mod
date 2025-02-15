@@ -1,6 +1,6 @@
 module github.com/bgallie/filters/ascii85
 
-go 1.20
+go 1.24
 
 require github.com/friendsofgo/errors v0.9.2
 
