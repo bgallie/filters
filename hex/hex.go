@@ -9,9 +9,8 @@ package hex
 
 import (
 	"encoding/hex"
+	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
 )
 
 // ToHex reads data from r, encodes it using hex encoder.  The encoded
@@ -24,7 +23,7 @@ func ToHex(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		_, err := io.Copy(hexW, r)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a hex encoder."))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from an io.Reader to a hex.Encoder."))
 		}
 	}()
 
@@ -41,7 +40,7 @@ func FromHex(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, hexR)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a hex decoder to a pipe writer"))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from a hex.Decoder to an io.PipeWriter: %w", err))
 		}
 	}()
 

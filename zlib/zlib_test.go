@@ -9,11 +9,34 @@ package zlib
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"reflect"
 	"strings"
 	"testing"
 )
+
+// formatByteSlice will take a byte slice and format a string
+// representation of it.  It will consiste of lines of 16 hexidecimal
+// characters seperated by a ', '.
+func formatByteSlice(prefix string, src []byte) string {
+	var output bytes.Buffer
+	output.WriteString(prefix)
+	i := 0
+	for _, v := range src {
+		output.WriteString(fmt.Sprintf("%#02x", v))
+		i++
+		switch {
+		case i == len(src):
+			// Do nothine.
+		case i%16 == 0:
+			output.WriteString(",\n" + prefix)
+		default:
+			output.WriteString(", ")
+		}
+	}
+	return output.String()
+}
 
 func TestToZlib(t *testing.T) {
 	type args struct {
@@ -28,18 +51,19 @@ func TestToZlib(t *testing.T) {
 			name: "ttz1",
 			args: args{r: strings.NewReader("This is only a test of the ToZlib filter.  For the next sixty seconds ...")},
 			want: []byte{
-				120, 218, 28, 200, 203, 9, 192, 32, 12, 128, 225, 85, 254, 9, 50, 70,
-				39, 240, 212, 91, 31, 17, 3, 98, 192, 228, 160, 219, 23, 122, 253, 74,
-				179, 192, 2, 31, 125, 115, 145, 26, 137, 87, 178, 41, 197, 207, 110, 55,
-				213, 122, 234, 20, 56, 124, 254, 62, 116, 37, 97, 43, 55, 161, 143, 143,
-				55, 16, 145, 47, 0, 0, 255, 255, 174, 124, 25, 55},
+				0x78, 0xda, 0x1c, 0xc8, 0xcb, 0x09, 0xc0, 0x20, 0x0c, 0x80, 0xe1, 0x55, 0xfe, 0x09, 0x32, 0x46,
+				0x27, 0xf0, 0xd4, 0x5b, 0x1f, 0x11, 0x03, 0x62, 0xc0, 0xe4, 0xa0, 0xdb, 0x17, 0x7a, 0xfd, 0x4a,
+				0xb3, 0xc0, 0x02, 0x1f, 0x7d, 0x73, 0x91, 0x1a, 0x89, 0x57, 0xb2, 0x29, 0xc5, 0xcf, 0x6e, 0x37,
+				0xd5, 0x7a, 0xea, 0x14, 0x38, 0x7c, 0xfe, 0x3e, 0x74, 0x25, 0x61, 0x2b, 0x37, 0xa1, 0x8f, 0x8f,
+				0x37, 0x10, 0x91, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xae, 0x7c, 0x19, 0x37,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ttfRdr := bufio.NewReader(ToZlib(tt.args.r))
 			if got, _ := io.ReadAll(ttfRdr); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToZlib() = %v, want %v", got, tt.want)
+				t.Errorf("ToZlib() = %v, want %v", formatByteSlice("", got), formatByteSlice("", tt.want))
 			}
 		})
 	}
@@ -57,12 +81,12 @@ func TestFromZlib(t *testing.T) {
 		{
 			name: "tfz1",
 			args: args{r: bytes.NewReader([]byte{
-				120, 218, 28, 201, 187, 13, 196, 32, 12, 128, 225, 85, 254, 9, 60, 6,
-				19, 92, 117, 93, 30, 70, 88, 34, 88, 194, 46, 96, 251, 72, 169, 191,
-				95, 179, 192, 2, 31, 125, 115, 144, 26, 137, 87, 178, 41, 101, 250, 243,
-				239, 118, 82, 173, 167, 78, 129, 226, 243, 147, 161, 43, 9, 91, 185, 9,
-				189, 124, 220, 129, 136, 188, 1, 0, 0, 255, 255, 231, 166, 26, 8},
-			)},
+				0x78, 0xda, 0x1c, 0xc9, 0xbb, 0x0d, 0xc4, 0x20, 0x0c, 0x80, 0xe1, 0x55, 0xfe, 0x09, 0x3c, 0x06,
+				0x13, 0x5c, 0x75, 0x5d, 0x1e, 0x46, 0x58, 0x22, 0x58, 0xc2, 0x2e, 0x60, 0xfb, 0x48, 0xa9, 0xbf,
+				0x5f, 0xb3, 0xc0, 0x02, 0x1f, 0x7d, 0x73, 0x90, 0x1a, 0x89, 0x57, 0xb2, 0x29, 0x65, 0xfa, 0xf3,
+				0xef, 0x76, 0x52, 0xad, 0xa7, 0x4e, 0x81, 0xe2, 0xf3, 0x93, 0xa1, 0x2b, 0x09, 0x5b, 0xb9, 0x09,
+				0xbd, 0x7c, 0xdc, 0x81, 0x88, 0xbc, 0x01, 0x00, 0x00, 0xff, 0xff, 0xe7, 0xa6, 0x1a, 0x08,
+			})},
 			want: "This is only a test of the FromZlib filter.  For the next sixty seconds ...",
 		},
 	}

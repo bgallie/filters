@@ -8,9 +8,9 @@ package flate
 
 import (
 	"compress/flate"
+	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
+	"log"
 )
 
 // ToFlate reads data from r and compresses it using flate with the best
@@ -20,7 +20,9 @@ func ToFlate(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	flateW, err := flate.NewWriter(rWrtr, flate.BestCompression)
 	if err != nil {
-		rWrtr.CloseWithError(errors.Wrap(err, "failure creating flate.NewWriter."))
+		rRdr.Close()
+		rWrtr.Close()
+		log.Fatalln(fmt.Errorf("error creating flate.NewWriter: %w", err))
 	}
 
 	go func() {
@@ -28,7 +30,7 @@ func ToFlate(r io.Reader) *io.PipeReader {
 		defer flateW.Close()
 		_, err := io.Copy(flateW, r)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a flate writer."))
+			log.Fatalln(fmt.Errorf("error copying to the flate.Writer from an io.Reader: %w", err))
 		}
 	}()
 
@@ -45,8 +47,8 @@ func FromFlate(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		defer flateR.Close()
 		_, err := io.Copy(rWrtr, flateR)
-		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a flate reader to a pipe writer."))
+		if err != nil && err != io.ErrUnexpectedEOF {
+			log.Fatalln(fmt.Errorf("error copying (io.Copy) from a flate.Reader to a io.PipeWriter: %w", err))
 		}
 	}()
 

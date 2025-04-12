@@ -7,10 +7,9 @@
 package binary
 
 import (
+	"errors"
 	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
 )
 
 // SetBit - set bit in a byte array
@@ -43,7 +42,7 @@ func ToBinary(r io.Reader) *io.PipeReader {
 			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
 				break
 			} else if err != nil {
-				rWrtr.CloseWithError(errors.Wrap(err, "failure reading from a reader"))
+				rWrtr.CloseWithError(fmt.Errorf("error reading from an io.Reader: %w", err))
 			}
 			cnt *= 8
 			for i := 0; i < cnt; i++ {
@@ -53,7 +52,7 @@ func ToBinary(r io.Reader) *io.PipeReader {
 					_, err = fmt.Fprint(rWrtr, "0")
 				}
 				if err != nil {
-					rWrtr.CloseWithError(errors.Wrap(err, "failure printing to a pipe writer"))
+					rWrtr.CloseWithError(fmt.Errorf("error printing to an io.PipeWriter: %w", err))
 				}
 			}
 		}
@@ -74,7 +73,7 @@ func FromBinary(r io.Reader) *io.PipeReader {
 		if errors.Is(err, io.EOF) {
 			return
 		} else if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure reading from a reader"))
+			rWrtr.CloseWithError(fmt.Errorf("error reading from an io.Reader: %w", err))
 		}
 		for {
 			outb := make([]byte, 128)
@@ -86,19 +85,19 @@ func FromBinary(r io.Reader) *io.PipeReader {
 				case "0":
 					outb = ClrBit(outb, uint(i))
 				default:
-					rWrtr.CloseWithError(errors.New("Invalid input to FromBinary"))
+					rWrtr.CloseWithError(fmt.Errorf("invalid input to FromBinary"))
 				}
 			}
 
 			_, err = rWrtr.Write(outb[:(n+7)/8])
 			if err != nil {
-				rWrtr.CloseWithError(errors.Wrap(err, "failure writing to a pipe writer"))
+				rWrtr.CloseWithError(fmt.Errorf("error writing to an io.PipeWriter: %w", err))
 			}
 			n, err = r.Read(buf)
 			if err == io.EOF {
 				break
 			} else if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) {
-				rWrtr.CloseWithError(errors.Wrap(err, "failure reading from reader"))
+				rWrtr.CloseWithError(fmt.Errorf("error reading from an io.Reader: %w", err))
 			}
 		}
 	}()

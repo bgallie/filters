@@ -8,9 +8,8 @@ package base64
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
 )
 
 // ToBase64 reads data from r, encodes it using a base64 encoder.
@@ -24,7 +23,7 @@ func ToBase64(r io.Reader) *io.PipeReader {
 		defer base64W.Close()
 		_, err := io.Copy(base64W, r)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a base64 encoder"))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from an io.Reader to a base64.Encoder: %w", err))
 		}
 	}()
 
@@ -41,7 +40,7 @@ func FromBase64(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, base64R)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a base64 decoder to a pipe writer"))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from a base64.Decoder to an io.PipeWriter: %w", err))
 		}
 	}()
 

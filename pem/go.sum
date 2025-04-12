@@ -1,7 +1,7 @@
-github.com/bgallie/filters/base64 v0.0.0-20230704004753-167f29af6fad h1:RBwmnxgsC5QJtLM2Py3dXC+h2r/j3YDnQYwdFO7SaoQ=
-github.com/bgallie/filters/base64 v0.0.0-20230704004753-167f29af6fad/go.mod h1:4K61ZAGHfjYSMJzGJGt8DolShlaYSNbDmi32KREFN6k=
-github.com/bgallie/filters/lines v0.0.0-20230704004753-167f29af6fad h1:AVAkJshIb/NGeZU2CoHwK9uNR470AeiJx0hKtQ/IAE4=
-github.com/bgallie/filters/lines v0.0.0-20230704004753-167f29af6fad/go.mod h1:yAz6fX/oOilhaMOK4NNh8z0X7sOQZhWNSCo34N8SaOg=
+github.com/bgallie/filters/base64 v0.0.0-20250215144818-de32942db439 h1:vI281IaJr+SST7+wt11+IOPlfIXS940Qx91ssJzcVA4=
+github.com/bgallie/filters/base64 v0.0.0-20250215144818-de32942db439/go.mod h1:g6oRCQT+HGnZpjT7BFXt+bU1ABhrgjlparwSppAj7Ec=
+github.com/bgallie/filters/lines v0.0.0-20250215144818-de32942db439 h1:CvxX9NW1eqT1CYVGUHkrVd2hjvkPgFEpA9xp9t6Y/iU=
+github.com/bgallie/filters/lines v0.0.0-20250215144818-de32942db439/go.mod h1:izOitetx7IDSA7nJOvPnNhxsBtn3vNMgaxri/Ppeva4=
 github.com/friendsofgo/errors v0.9.2 h1:X6NYxef4efCBdwI7BgS820zFaN7Cphrmb+Pljdzjtgk=
 github.com/friendsofgo/errors v0.9.2/go.mod h1:yCvFW5AkDIL9qn7suHVLiI/gH228n7PC4Pn44IGoTOI=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=

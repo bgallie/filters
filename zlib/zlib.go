@@ -8,9 +8,9 @@ package zlib
 
 import (
 	"compress/zlib"
+	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
+	"log"
 )
 
 // Tozlib reads data from r and compresses it using zlib with the best
@@ -20,7 +20,7 @@ func ToZlib(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	zlibW, err := zlib.NewWriterLevel(rWrtr, zlib.BestCompression)
 	if err != nil {
-		rWrtr.CloseWithError(errors.Wrap(err, "failure settomg NewWriterLevel in ToZlib"))
+		log.Fatalln(fmt.Errorf("error getting a zlib.NewWriterLevel in ToZlib: %w", err))
 	}
 
 	go func() {
@@ -28,7 +28,7 @@ func ToZlib(r io.Reader) *io.PipeReader {
 		defer zlibW.Close()
 		_, err := io.Copy(zlibW, r)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a zlib writer"))
+			log.Fatalln(fmt.Errorf("error copying (io.Copy) from an io.Reader to a zlib.Writer: %w", err))
 		}
 	}()
 
@@ -41,15 +41,17 @@ func FromZlib(r io.Reader) *io.PipeReader {
 	rRdr, rWrtr := io.Pipe()
 	zlibR, err := zlib.NewReader(r)
 	if err != nil {
-		rWrtr.CloseWithError(errors.Wrap(err, "failure creating a NewReader in FromZlib"))
+		rWrtr.Close()
+		zlibR.Close()
+		log.Fatalln(fmt.Errorf("error creating a zlib.NewReader in FromZlib: %w", err))
 	}
 
 	go func() {
-		defer zlibR.Close()
 		defer rWrtr.Close()
-		_, err := io.Copy(rWrtr, zlibR)
+		defer zlibR.Close()
+		_, err = io.Copy(rWrtr, zlibR)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a zlib reader to a pipe writer"))
+			log.Fatalln(fmt.Errorf("error copying (io.Copy) from a zlib.Reader to an io.PipeWriter: %w", err))
 		}
 	}()
 

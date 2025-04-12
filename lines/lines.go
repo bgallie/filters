@@ -10,10 +10,9 @@ package lines
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
 )
 
 // LineSize defines the number of character that are put into a line by the
@@ -35,7 +34,7 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 		for {
 			n, err := io.ReadFull(r, line)
 			if err != nil && !(errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF)) {
-				rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a reader."))
+				rWtr.CloseWithError(fmt.Errorf("error reading a line of text from an io.Reader: %w", err))
 			}
 
 			if err != nil {
@@ -43,7 +42,7 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 				if n != 0 {
 					_, err = fmt.Fprintln(rWtr, string(line[:n]))
 					if err != nil {
-						rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer."))
+						rWtr.CloseWithError(fmt.Errorf("error writing text to an io.PipeWriter: %w", err))
 					}
 				}
 
@@ -52,7 +51,7 @@ func SplitToLines(r io.Reader) *io.PipeReader {
 
 			_, err = fmt.Fprintln(rWtr, string(line[:n]))
 			if err != nil {
-				rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer."))
+				rWtr.CloseWithError(fmt.Errorf("error writing text to an io.PipeWriter: %w", err))
 			}
 		}
 	}()
@@ -77,11 +76,11 @@ func CombineLines(r io.Reader) *io.PipeReader {
 			if err == nil {
 				_, err := rWtr.Write(line)
 				if err != nil {
-					rWtr.CloseWithError(errors.Wrap(err, "failure writing text to a pipe writer"))
+					rWtr.CloseWithError(fmt.Errorf("error writing text to an io.PipeWriter: %w", err))
 				}
 			} else {
 				if !errors.Is(err, io.EOF) {
-					rWtr.CloseWithError(errors.Wrap(err, "failure reading a line of text from a buffered reader"))
+					rWtr.CloseWithError(fmt.Errorf("error reading a line of text from a buffered io.Reader: %w", err))
 				}
 				break
 			}

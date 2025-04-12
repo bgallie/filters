@@ -8,9 +8,8 @@ package ascii85
 
 import (
 	"encoding/ascii85"
+	"fmt"
 	"io"
-
-	"github.com/friendsofgo/errors"
 )
 
 // ToASCII85 reads data from r, encodes it using Ascii85.
@@ -24,7 +23,7 @@ func ToASCII85(r io.Reader) *io.PipeReader {
 		defer ascii85W.Close()
 		_, err := io.Copy(ascii85W, r)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a reader to a ascii85 encoder"))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from an io.Reader to an ascii85.Encoder: %w", err))
 		}
 	}()
 
@@ -41,7 +40,7 @@ func FromASCII85(r io.Reader) *io.PipeReader {
 		defer rWrtr.Close()
 		_, err := io.Copy(rWrtr, ascii85R)
 		if err != nil {
-			rWrtr.CloseWithError(errors.Wrap(err, "failure copying (io.Copy) from a ascii85 decoder to a pipe writer"))
+			rWrtr.CloseWithError(fmt.Errorf("error copying (io.Copy) from an ascii85.Decoder to an io.PipeWriter: %w", err))
 		}
 	}()
 

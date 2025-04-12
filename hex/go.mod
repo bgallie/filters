@@ -1,6 +1,6 @@
 module github.com/bgallie/filters/hex
 
-go 1.24
+go 1.24.2
 
 require github.com/friendsofgo/errors v0.9.2
 

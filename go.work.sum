@@ -1,3 +1,4 @@
 github.com/bgallie/filters v1.2.5/go.mod h1:4Nh36ZRr7ZHlRdkz1KF5tWEmTcQpmADGFfwhMiqJlcg=
 github.com/bgallie/filters/base64 v0.0.0-20211016023717-e8eb8749828a/go.mod h1:Om2AXfq1oXTSMMmOoWxIYKWLc0X9jzHdBHrEFdPyt9E=
 github.com/bgallie/filters/lines v0.0.0-20211016023717-e8eb8749828a/go.mod h1:0aVGIEtid8RkfurV07aZLepsPyYnbZh4leOGot64qPg=
+golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2/go.mod h1:K8+ghG5WaK9qNqU5K3HdILfMLy1f3aNYFI/wnl100a8=
