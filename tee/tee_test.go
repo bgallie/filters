@@ -26,8 +26,6 @@ func (b *myBuffer) CLose() error {
 }
 
 func TestTee(t *testing.T) {
-	var bufr bytes.Buffer
-	b.Grow(1024)
 	type args struct {
 		rdr  io.Reader
 		wrtr io.Writer
