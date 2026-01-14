@@ -1,4 +1,10 @@
+github.com/bgallie/filters v1.2.7 h1:tD/Da0QvNnKljt+7WtknxdkpdJ2LB8gOKUpIxRJVVcE=
+github.com/bgallie/filters v1.2.7/go.mod h1:ygzbjiu0CmnS2aQk/Ai/9gfLzNPORBjrMl78X0E73Ko=
 github.com/bgallie/filters/base64 v0.0.0-20250416201050-bb5407c2b958 h1:TAPHUWqB9R1Ln1oKkp4Q33DID+is/Ow6BQxbq2TlHJQ=
 github.com/bgallie/filters/base64 v0.0.0-20250416201050-bb5407c2b958/go.mod h1:F1qoYIagGTVtHRo4brMn82GZXIF0+j1U2Uu36NFcHRs=
+github.com/bgallie/filters/base64 v0.0.0-20250416202027-007787e436aa h1:CWnystIDKuhMpg0Qjo+LulojFegcl3hVA7LhgVYEZ2I=
+github.com/bgallie/filters/base64 v0.0.0-20250416202027-007787e436aa/go.mod h1:F1qoYIagGTVtHRo4brMn82GZXIF0+j1U2Uu36NFcHRs=
 github.com/bgallie/filters/lines v0.0.0-20250416201050-bb5407c2b958 h1:C411FZeO9cGOJ42P9j4HifwMQvXyBep8ynjdGCIwvOs=
 github.com/bgallie/filters/lines v0.0.0-20250416201050-bb5407c2b958/go.mod h1:ONpBb7XIS4qpUqhXb0rPRAyan43F8mOi8+zb09M16KA=
+github.com/bgallie/filters/lines v0.0.0-20250416202027-007787e436aa h1:XV7nCi62vXxwMtlrM6WyNZiSk2Htd4Kxy8mMPzceE1M=
+github.com/bgallie/filters/lines v0.0.0-20250416202027-007787e436aa/go.mod h1:ONpBb7XIS4qpUqhXb0rPRAyan43F8mOi8+zb09M16KA=
